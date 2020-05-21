@@ -11,6 +11,9 @@ const compileUtil = {
     html: (node, expr, vm) => {
         const value = compileUtil.getValue(expr, vm)
         compileUtil.updater.htmlUpdater(node, value)
+        new Watcher(vm, expr, (newValue) => {
+            compileUtil.updater.htmlUpdater(node, newValue)
+        })
     },
     model: (node, expr, vm) => {
         const value = compileUtil.getValue(expr, vm)

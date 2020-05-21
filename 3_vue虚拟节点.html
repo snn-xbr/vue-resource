@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>vue--虚拟节点</title>
+
+  <style type="text/css">
+  </style>
+</head>
+
+<body>
+  <div id='root'>
+    <div>122</div>
+    <div>
+      <ul>
+        <li>1</li>
+        <li>2</li>
+      </ul>
+    </div>
+  </div>
+</body>
+
+<script type="text/javascript">
+
+  // VNode类
+  class VNode {
+    constructor(tag, data, value, type) {
+      this.tag = tag
+      this.data = data
+      this.value = value
+      this.type = type
+      this.children = []
+    }
+
+    // 追加子节点
+    appendChild(cnode) {
+      this.children.push(cnode)
+    }
+  }
+
+  function getVNode(node) {
+    let vnode = null
+    const nodeType = node.nodeType
+    if (nodeType === 1) { // 元素节点
+      const tag = node.nodeName.toLowerCase()
+      const attrs = node.attributes
+      const value = node.nodeValue
+      const _obj = {}
+      for(let i = 0; i < attrs.length; i++) {
+        _obj[attrs[i].name] = attrs[i].value // nodeName, nodeValue
+      }
+      vnode = new VNode(tag, _obj, undefined, nodeType)
+      const childNodes = node.childNodes
+      for(let i = 0; i < childNodes.length; i++) {
+        let _vnode = getVNode(childNodes[i])
+        vnode.appendChild(_vnode)
+      }
+    } else if (nodeType === 3) { // 文本节点
+      const tag = node.nodeName.toLowerCase()
+      const value = node.nodeValue
+      vnode = new VNode(tag, undefined, value, nodeType)
+    }
+    return vnode
+  }
+
+  const root = document.getElementById('root')
+  const vroot = getVNode(root)
+  console.log(vroot)
+</script>

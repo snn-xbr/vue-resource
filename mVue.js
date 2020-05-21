@@ -7,6 +7,7 @@ class mVue{
         this.$options = options
 
         // 数据观察者
+        new Observer(this.$data)
         // 编译器
         new Compile(this.$el, this.$data, this)
     }

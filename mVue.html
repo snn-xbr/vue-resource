@@ -7,6 +7,9 @@
   <script src='./mVue.js'></script>
   <script src='./Compile.js'></script>
   <script src='./compileUtil.js'></script>
+  <script src='./Observer.js'></script>
+  <script src='./Dep.js'></script>
+  <script src='./Watcher.js'></script>
 </head>
 
 <body>
@@ -19,7 +22,7 @@
 </body>
 
 <script type="text/javascript">
-    new mVue({
+    const vm = new mVue({
         el: '#app',
         data: {
             persons: {

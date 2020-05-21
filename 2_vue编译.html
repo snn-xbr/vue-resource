@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>vue编译--构造函数化</title>
+
+  <style type="text/css">
+  </style>
+</head>
+
+<body>
+  <div id='root'>
+    <div>{{description}}</div>
+    <span>{{person.name.firstName}}{{person.name.lastName}}-{{person.age}}</span>
+  </div>
+</body>
+
+<script type="text/javascript">
+  function _compile(template, data) {
+    let childNodes = template.childNodes
+    for (let i = 0; i < childNodes.length; i++) {
+      let cn = childNodes[i]
+      if (cn.nodeType === 1) { // 元素节点
+        _compile(cn, data)
+      } else if(cn.nodeType === 3) { // 文本节点
+        let text = cn.nodeValue // 文本节点独有的属性， nodeName是文本节点独有的
+        text = text.replace(/\{\{(.+?)\}\}/g, (_, key) =>{ // ?匹配一次或者零次 g匹配全部，不是匹配到第一个就停止
+          const value = _getValueByPath(data, key)
+          return value
+        })
+        cn.nodeValue = text
+      }
+    }
+  }
+
+  function _getValueByPath(data, keyPath) {
+    const keys = keyPath.split('.')
+    return keys.reduce((data, key) => {
+      return data[key]
+    }, data)
+  }
+
+  function Vue(options) {
+    this._data = options.data
+    this.$el = document.querySelector(options.el)
+    this.render()
+  }
+
+  Vue.prototype.render = function() { // ☆不能使用箭头函数：箭头函数☆
+    const generateNode = this.$el.cloneNode(true)
+    this.compile(generateNode) // 编译
+    this.update(generateNode) // 更新
+  }
+
+  Vue.prototype.compile = function(generateNode) {
+    _compile(generateNode, this._data)
+  }
+
+  Vue.prototype.update = function(newTemplate) {
+    this.$el.parentNode.replaceChild(newTemplate, this.$el)
+  }
+
+  new Vue({
+    el: '#root',
+    data: {
+      person: {
+        name: {
+          firstName: 't',
+          lastName: 'a'
+        },
+        age: 11
+      },
+      description: '人的信息'
+    }
+  })
+</script>

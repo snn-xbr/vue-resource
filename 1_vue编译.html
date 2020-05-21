@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>vue编译</title>
+
+  <style type="text/css">
+  </style>
+</head>
+
+<body>
+  <div id='root'>
+    <div>{{name}}</div>
+    <span>{{name}}-{{age}}</span>
+  </div>
+</body>
+
+<script type="text/javascript">
+  let templateNode = document.getElementById('root')
+  let data = {
+    name: 'tom',
+    age: 1
+  }
+
+  function compile(template){
+    let childNodes = template.childNodes
+    for (let i=0; i<childNodes.length; i++) {
+      let cn = childNodes[i];
+      if (cn.nodeType === 1) { // 元素节点
+        compile(cn)
+      } else if(cn.nodeType === 3) { // 文本节点
+        let text = cn.nodeValue; // 文本节点独有的属性， nodeName是文本节点独有的
+        text = text.replace(/\{\{(.+?)\}\}/g, (_, key) =>{ // ?匹配一次或者零次 g匹配全部，不是匹配到第一个就停止
+          const value = data[key]
+          return value
+        })
+        cn.nodeValue = text
+      }
+    }
+  }
+
+  const generateNode = templateNode.cloneNode(true)
+  console.log(templateNode)
+  compile(generateNode)
+  root.parentNode.replaceChild(generateNode, templateNode)
+  console.log(generateNode)
+
+</script>
